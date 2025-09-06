@@ -1,34 +1,29 @@
-name: Flutter Web
-on:
-  push:
-    branches:
-      - main
-jobs:
-  build:
-    name: Build Web
-    env:
-      my_secret: ${{secrets.commit_secret}}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
-      - run: flutter config --enable-web
-      - run: flutter pub get
-      - run: flutter build web --release
-      - run: |
-          cd build/web
-          git init
-          # type configurations: your user.email and user.name followed lines
-          # git config --global user.email hieu.trantrung1204@gmail.com
-          # git config --global user.name hieu.trantrung1204@gmail.com
-          git config --global user.email hieu.trantrung1204@gmail.com
-          git config --global user.name trunghieuvn
-          git status
-          # change this remote url for examle your remote url is https://github.com/fighttechvn/fightdemo then the following:
-          git remote add origin https://${{secrets.commit_secret}}@github.com/fighttechvn/fightdemo.git
-          git checkout -b gh-pages
-          git add --all
-          git commit -m "update"
-          git push origin gh-pages -f
+    name: Deploy Flutter Web to GitHub Pages
+
+    on:
+      push:
+        branches:
+          - main # Or your primary branch
+
+    jobs:
+      build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+          - uses: actions/checkout@v4 # Checkout the repository
+
+          - uses: subosito/flutter-action@v2 # Setup Flutter SDK
+            with:
+              channel: 'stable' # Or 'beta', 'dev'
+
+          - run: flutter pub get # Get Flutter dependencies
+
+          - run: flutter build web --release # Build the Flutter web app
+
+          - name: Deploy to GitHub Pages
+            uses: peaceiris/actions-gh-pages@v3 # Action to deploy to gh-pages
+            with:
+              github_token: ${{ secrets.GITHUB_TOKEN }}
+              publish_dir: ./build/web # Directory containing the built web assets
+              # Optional: base_href if deploying to a project site (e.g., username.github.io/repoName)
+              # cname: 'your-custom-domain.com' # Optional: for custom domains
