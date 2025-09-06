@@ -1,29 +1,29 @@
-    name: Deploy Flutter Web to GitHub Pages
+name: Deploy Flutter Web to GitHub Pages
 
-    on:
-      push:
-        branches:
-          - main # Or your primary branch
+on:
+  push:
+    branches:
+      - main # Or your primary branch
 
-    jobs:
-      build-and-deploy:
-        runs-on: ubuntu-latest
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-        steps:
-          - uses: actions/checkout@v4 # Checkout the repository
+    steps:
+      - uses: actions/checkout@v4 # Checkout the repository
 
-          - uses: subosito/flutter-action@v2 # Setup Flutter SDK
-            with:
-              channel: 'stable' # Or 'beta', 'dev'
+      - uses: subosito/flutter-action@v2 # Setup Flutter SDK
+        with:
+          channel: "stable" # Or 'beta', 'dev'
 
-          - run: flutter pub get # Get Flutter dependencies
+      - run: flutter pub get # Get Flutter dependencies
 
-          - run: flutter build web --release # Build the Flutter web app
+      - run: flutter build web --wasm --release --base-href /fightdemo/
 
-          - name: Deploy to GitHub Pages
-            uses: peaceiris/actions-gh-pages@v3 # Action to deploy to gh-pages
-            with:
-              github_token: ${{ secrets.GITHUB_TOKEN }}
-              publish_dir: ./build/web # Directory containing the built web assets
-              # Optional: base_href if deploying to a project site (e.g., username.github.io/repoName)
-              # cname: 'your-custom-domain.com' # Optional: for custom domains
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3 # Action to deploy to gh-pages
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web # Directory containing the built web assets
+          # Optional: base_href if deploying to a project site (e.g., username.github.io/repoName)
+          # cname: 'your-custom-domain.com' # Optional: for custom domains
